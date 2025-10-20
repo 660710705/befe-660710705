@@ -16,17 +16,19 @@ const LoginPage = () => {
     if (username === 'bookstoreadmin' && password === 'ManageBook68') {
       // Store authentication token/flag
       localStorage.setItem('isAdminAuthenticated', 'true');
-      navigate('/store-manager/add-book');
+      // navigate('/store-manager/add-book');
+      navigate('/store-manager/all-book');
     } else {
       setError('ชื่อผู้ใช้หรือรหัสผ่านไม่ถูกต้อง');
     }
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-viridian-600 to-green-700 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-gradient-to-br from-emerald-200 to-green-700
+ flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-md w-full space-y-8">
         <div>
-          <div className="mx-auto h-16 w-16 bg-white rounded-full flex items-center justify-center">
+          <div className="mx-auto h-16 w-16 bg-green rounded-full flex items-center justify-center">
             <LockClosedIcon className="h-10 w-10 text-viridian-600" />
           </div>
           <h2 className="mt-6 text-center text-3xl font-extrabold text-white">
@@ -37,7 +39,7 @@ const LoginPage = () => {
           </p>
         </div>
 
-        <div className="bg-white rounded-xl shadow-2xl p-8">
+        <div className="bg-green rounded-xl shadow-2xl p-8">
           <form className="space-y-6" onSubmit={handleSubmit}>
             {error && (
               <div className="bg-red-50 border border-red-400 text-red-700 px-4 py-3 rounded-lg">

@@ -151,7 +151,7 @@ const AddBookPage = () => {
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
-      <header className="bg-gradient-to-r from-viridian-600 to-green-700 text-white shadow-lg">
+      <header className="bg-gradient-to-r from-emerald-400 to-green-700 text-white shadow-lg">
         <div className="container mx-auto px-4 py-6">
           <div className="flex justify-between items-center">
             <div className="flex items-center space-x-3">
@@ -225,7 +225,7 @@ const AddBookPage = () => {
                   className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2
                     ${errors.author
                       ? 'border-red-500 focus:ring-red-500'
-                      : 'border-gray-300 focus:ring-viridian-500'}`}
+                      : 'border-gray-300 focus:ring-green-500'}`}
                   placeholder="กรอกชื่อผู้แต่ง"
                 />
                 {errors.author && (
@@ -247,7 +247,7 @@ const AddBookPage = () => {
                   className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2
                     ${errors.isbn
                       ? 'border-red-500 focus:ring-red-500'
-                      : 'border-gray-300 focus:ring-viridian-500'}`}
+                      : 'border-gray-300 focus:ring-green-500'}`}
                   placeholder="กรอก ISBN (ตัวอย่าง: 978-3-16-148410-0)"
                 />
                 {errors.isbn && (
@@ -271,7 +271,7 @@ const AddBookPage = () => {
                     className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2
                       ${errors.year
                         ? 'border-red-500 focus:ring-red-500'
-                        : 'border-gray-300 focus:ring-viridian-500'}`}
+                        : 'border-gray-300 focus:ring-green-500'}`}
                     placeholder="เช่น 2024"
                   />
                   {errors.year && (
@@ -294,7 +294,7 @@ const AddBookPage = () => {
                     className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2
                       ${errors.price
                         ? 'border-red-500 focus:ring-red-500'
-                        : 'border-gray-300 focus:ring-viridian-500'}`}
+                        : 'border-gray-300 focus:ring-green-500'}`}
                     placeholder="เช่น 350.00"
                   />
                   {errors.price && (
@@ -312,7 +312,7 @@ const AddBookPage = () => {
                     transition-colors duration-200
                     ${isSubmitting
                       ? 'bg-gray-400 cursor-not-allowed'
-                      : 'bg-viridian-600 hover:bg-viridian-700'}`}
+                      : 'bg-viridian-600 hover:bg-green-700'}`}
                 >
                   {isSubmitting ? 'กำลังบันทึก...' : 'เพิ่มหนังสือ'}
                 </button>

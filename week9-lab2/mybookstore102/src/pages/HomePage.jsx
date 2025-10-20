@@ -3,22 +3,24 @@ import { Link } from 'react-router-dom';
 import { ArrowRightIcon, BookOpenIcon, TruckIcon, ShieldCheckIcon } from '@heroicons/react/outline';
 import BookCard from '../components/BookCard';
 import FeaturedBooks from '../components/FeaturedBooks';
-import Newbooks from '../components/Newbooks';
-
+import NewBook from '../components/Newbooks';
 const HomePage = () => {
+  const featuredBooks = [
+
+  ];
 
   const categories = [
     { name: 'นิยาย', icon: '📚', color: 'bg-sky-100', slug: 'fiction' },
     { name: 'การ์ตูน', icon: '🎨', color: 'bg-rose-100', slug: 'comics' },
     { name: 'วิชาการ', icon: '🎓', color: 'bg-lime-100', slug: 'academic' },
     { name: 'จิตวิทยา', icon: '🧠', color: 'bg-indigo-100', slug: 'psychology' },
-    { name: 'กีฬา', icon: '🧠', color: 'bg-cyan-100', slug: 'sport' },
+    { name: 'กีฬา', icon: '⚽', color: 'bg-indigo-100', slug: 'sports' },
   ];
 
   return (
     <div className="min-h-screen">
       {/* Hero Section */}
-      <section className="relative bg-gradient-to-r from-purple-400 to-purple-800 text-white">
+      <section className="relative bg-gradient-to-r from-purple-400 to-purple-700 text-black">
         <div className="container mx-auto px-4 py-24">
           <div className="max-w-3xl">
             <h1 className="text-5xl md:text-6xl font-bold mb-6 animate-fade-in">
@@ -29,15 +31,15 @@ const HomePage = () => {
             </p>
             <div className="flex flex-col sm:flex-row gap-4">
               <Link to="/books"
-                className="inline-flex items-center justify-center px-8 py-3 bg-white 
-                text-black font-semibold rounded-lg hover:bg-gray-100 
-                transform hover:scale-105 transition-all duration-200 ">
+                className="inline-flex items-center justify-center px-8 py-3 bg-white
+                text-viridian-600 font-semibold rounded-lg hover:bg-gray-100
+                transform hover:scale-105 transition-all duration-200">
                 เลือกซื้อหนังสือ
                 <ArrowRightIcon className="ml-2 h-5 w-5" />
               </Link>
               <Link to="/categories"
-                className="inline-flex items-center justify-center px-8 py-3 
-                border-2 border-white text-white font-semibold rounded-lg 
+                className="inline-flex items-center justify-center px-8 py-3
+                border-2 border-white text-black font-semibold rounded-lg
                 hover:bg-white hover:text-viridian-600 transition-all duration-200">
                 ดูหมวดหมู่ทั้งหมด
               </Link>
@@ -59,7 +61,7 @@ const HomePage = () => {
         <div className="container mx-auto px-4">
           <div className="grid md:grid-cols-3 gap-8">
             <div className="text-center group">
-              <div className="bg-viridian-100 p-4 rounded-full w-20 h-20 mx-auto mb-4 
+              <div className="bg-viridian-100 p-4 rounded-full w-20 h-20 mx-auto mb-4
                 group-hover:bg-viridian-200 transition-colors">
                 <TruckIcon className="h-12 w-12 text-viridian-600" />
               </div>
@@ -67,7 +69,7 @@ const HomePage = () => {
               <p className="text-gray-600">เมื่อซื้อครบ 500 บาท</p>
             </div>
             <div className="text-center group">
-              <div className="bg-green-100 p-4 rounded-full w-20 h-20 mx-auto mb-4 
+              <div className="bg-green-100 p-4 rounded-full w-20 h-20 mx-auto mb-4
                 group-hover:bg-green-200 transition-colors">
                 <ShieldCheckIcon className="h-12 w-12 text-green-600" />
               </div>
@@ -75,7 +77,7 @@ const HomePage = () => {
               <p className="text-gray-600">หนังสือของแท้ 100%</p>
             </div>
             <div className="text-center group">
-              <div className="bg-purple-100 p-4 rounded-full w-20 h-20 mx-auto mb-4 
+              <div className="bg-purple-100 p-4 rounded-full w-20 h-20 mx-auto mb-4
                 group-hover:bg-purple-200 transition-colors">
                 <BookOpenIcon className="h-12 w-12 text-purple-600" />
               </div>
@@ -95,14 +97,14 @@ const HomePage = () => {
               <Link
                 key={index}
                 to={`/categories/${category.slug}`}
-                className="group relative overflow-hidden rounded-xl shadow-lg hover:shadow-2xl 
+                className="group relative overflow-hidden rounded-xl shadow-lg hover:shadow-2xl
                   transition-all duration-300 transform hover:-translate-y-2"
               >
                 <div className={`${category.color} h-40 flex flex-col items-center justify-center`}>
                   <span className="text-5xl mb-2">{category.icon}</span>
                   <h3 className="text-sky-950 font-bold text-lg">{category.name}</h3>
                 </div>
-                <div className="absolute inset-0 bg-black opacity-0 group-hover:opacity-20 
+                <div className="absolute inset-0 bg-black opacity-0 group-hover:opacity-20
                   transition-opacity duration-300"></div>
               </Link>
             ))}
@@ -110,23 +112,29 @@ const HomePage = () => {
         </div>
       </section>
 
-      {/* New Books */}
-      <section className="py-16 bg-gray-50">
+      {/* หนังสือใหม่ */}
+      <section className="py-16">
         <div className="container mx-auto px-4">
           <h2 className="text-3xl font-bold text-center mb-12">หนังสือใหม่</h2>
-          <Newbooks />
+          <NewBook />
         </div>
       </section>
+
       {/* Featured Books */}
       <section className="py-16 bg-gray-50">
         <div className="container mx-auto px-4">
           <h2 className="text-3xl font-bold text-center mb-12">หนังสือแนะนำ</h2>
           <FeaturedBooks />
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {featuredBooks.map(book => (
+              <BookCard key={book.id} book={book} />
+            ))}
+          </div>
           <div className="text-center mt-8">
-            <Link to="/books" className="inline-flex items-center text-viridian-600 
+            <Link to="/books" className="inline-flex items-center text-viridian-600
               hover:text-viridian-700 font-semibold text-lg group">
               ดูหนังสือทั้งหมด
-              <ArrowRightIcon className="ml-2 h-5 w-5 group-hover:translate-x-2 
+              <ArrowRightIcon className="ml-2 h-5 w-5 group-hover:translate-x-2
                 transition-transform" />
             </Link>
           </div>
@@ -146,10 +154,10 @@ const HomePage = () => {
             <input
               type="email"
               placeholder="กรอกอีเมลของคุณ"
-              className="flex-1 px-6 py-3 rounded-lg focus:outline-none focus:ring-4 
+              className="flex-1 px-6 py-3 rounded-lg focus:outline-none focus:ring-4
                 focus:ring-viridian-300 text-gray-900"
             />
-            <button type="submit" className="px-8 py-3 bg-yellow-400 text-viridian-900 
+            <button type="submit" className="px-8 py-3 bg-yellow-400 text-viridian-900
               font-semibold rounded-lg hover:bg-yellow-300 transition-colors">
               สมัครรับข่าว
             </button>

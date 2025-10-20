@@ -9,6 +9,8 @@ import (
 	"net/http"
 	"time"
 
+	_ "week11-assignment/docs"
+
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	_ "github.com/lib/pq"
@@ -24,7 +26,8 @@ type Book struct {
 	Year   int     `json:"year"`
 	Price  float64 `json:"price"`
 
-	Category      string   `json:"category"`
+	// ฟิลด์ใหม่
+	Category      sql.NullString   `json:"category"`
 	OriginalPrice *float64 `json:"original_price,omitempty"`
 	Discount      int      `json:"discount"`
 	CoverImage    string   `json:"cover_image"`
@@ -55,11 +58,11 @@ var db *sql.DB
 
 func initDB() {
 	var err error
-	host := getEnv("DB_HOST", "")
-	name := getEnv("DB_NAME", "")
-	user := getEnv("DB_USER", "")
-	password := getEnv("DB_PASSWORD", "")
-	port := getEnv("DB_PORT", "")
+	host := getEnv("DB_HOST", "localhost")
+	name := getEnv("DB_NAME", "bookstore")
+	user := getEnv("DB_USER", "bookstore_user")
+	password := getEnv("DB_PASSWORD", "your_strong_password")
+	port := getEnv("DB_PORT", "5432")
 
 	conSt := fmt.Sprintf("host=%s port=%s user=%s password=%s dbname=%s sslmode=disable", host, port, user, password, name)
 	//fmt.Println(conSt)
@@ -94,48 +97,59 @@ func initDB() {
 // @Failure 404  {object}  ErrorResponse
 // @Router  /books [get]
 func getAllBooks(c *gin.Context) {
+
 	var rows *sql.Rows
 	var err error
-	categoryQuery := c.Query("category")
 
-	if categoryQuery != "" {
-		// ลูกค้าถาม "มีหนังสืออะไรบ้าง"
-		rows, err = db.Query(`
-			SELECT id, title, author, category, isbn, year, price, created_at, updated_at FROM books WHERE category = $1`, categoryQuery)
-		if err != nil {
-			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-			return
-		}
-
-		defer rows.Close() // ต้องปิด rows เสมอ เพื่อคืน Connection กลับ pool
-
-	} else {
-		// ลูกค้าถาม "มีหนังสืออะไรบ้าง"
-		rows, err = db.Query(`
-			SELECT id, title, author, category, isbn, year, price, created_at, updated_at FROM books`)
-		if err != nil {
-			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-			return
-		}
-
-		defer rows.Close() // ต้องปิด rows เสมอ เพื่อคืน Connection กลับ pool
+	// ลูกค้าถาม "มีหนังสืออะไรบ้าง"
+	rows, err = db.Query(`SELECT id, title, author, isbn, year, price,
+    category, original_price, discount, cover_image, rating, reviews_count, is_new, pages,
+    language, publisher, description, created_at, updated_at FROM books`)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
 	}
+	defer rows.Close() // ต้องปิด rows เสมอ เพื่อคืน Connection กลับ pool
 
 	var books []Book
 	for rows.Next() {
 		var book Book
-		err := rows.Scan(&book.ID, &book.Title, &book.Author, &book.Category, &book.ISBN, &book.Year, &book.Price, &book.CreatedAt, &book.UpdatedAt)
-
+		err := rows.Scan(
+			&book.ID, &book.Title, &book.Author, &book.ISBN, &book.Year, &book.Price,
+			&book.Category, &book.OriginalPrice, &book.Discount, &book.CoverImage, &book.Rating,
+			&book.ReviewsCount, &book.IsNew, &book.Pages, &book.Language, &book.Publisher,
+			&book.Description, &book.CreatedAt, &book.UpdatedAt)
 		if err != nil {
-			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-			return
+			// handle error
 		}
-
 		books = append(books, book)
 	}
-
 	if books == nil {
 		books = []Book{}
+	}
+
+	yearQuery := c.Query("year")
+	if yearQuery != "" {
+		filter := []Book{}
+		for _, book := range books {
+			if fmt.Sprint(book.Year) == yearQuery {
+				filter = append(filter, book)
+			}
+		}
+		c.JSON(http.StatusOK, filter)
+		return
+	}
+
+	categoryQuery := c.Query("category")
+	if categoryQuery != "" {
+		filter := []Book{}
+		for _, book := range books {
+			if fmt.Sprint(book.Category) == categoryQuery {
+				filter = append(filter, book)
+			}
+		}
+		c.JSON(http.StatusOK, filter)
+		return
 	}
 
 	c.JSON(http.StatusOK, books)
@@ -154,9 +168,9 @@ func getAllBooks(c *gin.Context) {
 func getNewBooks(c *gin.Context) {
 
 	rows, err := db.Query(`
-        SELECT id, title, author, isbn, year, price, created_at, updated_at 
-        FROM books 
-        ORDER BY created_at DESC 
+        SELECT id, title, author, isbn, year, price, created_at, updated_at
+        FROM books
+        ORDER BY created_at DESC
         LIMIT 5
     `)
 
@@ -371,8 +385,8 @@ func searchwantBook(c *gin.Context) {
 	if searchQuery != "" {
 		keyword := "%" + searchQuery + "%"
 		rows, err := db.Query(`
-			SELECT id, title, author, category, isbn, year, price, created_at, updated_at FROM books WHERE title ILIKE $1  OR author ILIKE $1
-	   OR category ILIKE $1 OR isbn ILIKE $1`, keyword)
+            SELECT id, title, author, category, isbn, year, price, created_at, updated_at FROM books WHERE title ILIKE $1  OR author ILIKE $1
+       OR category ILIKE $1 OR isbn ILIKE $1`, keyword)
 
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
@@ -403,8 +417,8 @@ func searchwantBook(c *gin.Context) {
 
 func recommandedBook(c *gin.Context) {
 	rows, err := db.Query(`
-        SELECT id, title, author, category, isbn, year, price, created_at, updated_at, rating 
-        FROM books 
+        SELECT id, title, author, category, isbn, year, price, created_at, updated_at, rating
+        FROM books
         ORDER BY rating DESC
         LIMIT 5
     `)
@@ -447,9 +461,9 @@ func recommandedBook(c *gin.Context) {
 func discountedbook(c *gin.Context) {
 
 	rows, err := db.Query(`
-        SELECT id, title, author, category, isbn, year, price, discount, created_at, updated_at, rating 
-        FROM books 
-        ORDER BY discount DESC 
+        SELECT id, title, author, category, isbn, year, price, discount, created_at, updated_at, rating
+        FROM books
+        ORDER BY discount DESC
         LIMIT 5
     `)
 
@@ -513,19 +527,20 @@ func main() {
 	})
 
 	api := r.Group("/api/v1")
-	{
-		api.GET("/books", getAllBooks)
-		api.GET("/books/new", getNewBooks)
-		api.GET("/books/:id", getBook)
-		api.POST("/books", createBook)
-		api.PUT("/books/:id", updateBook)
-		api.DELETE("/books/:id", deleteBook)
-
-		api.GET("/categories", getAllCategories)
-		api.GET("/books/search", searchwantBook)
-		api.GET("/books/featured", recommandedBook)
-		api.GET("/books/discounted", discountedbook)
-	}
+{
+    api.GET("/books", getAllBooks)
+    api.GET("/books/new", getNewBooks)
+    api.GET("/books/featured", recommandedBook)
+    api.GET("/books/discounted", discountedbook)
+    api.GET("/books/search", searchwantBook)
+    api.GET("/categories", getAllCategories)
+    
+    
+    api.GET("/books/:id", getBook)
+    api.POST("/books", createBook)
+    api.PUT("/books/:id", updateBook)
+    api.DELETE("/books/:id", deleteBook)
+}
 
 	r.Run(":8080")
 }
