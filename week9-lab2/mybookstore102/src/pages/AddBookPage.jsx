@@ -312,7 +312,7 @@ const AddBookPage = () => {
                     transition-colors duration-200
                     ${isSubmitting
                       ? 'bg-gray-400 cursor-not-allowed'
-                      : 'bg-viridian-600 hover:bg-green-700'}`}
+                      : 'bg-blue-600 hover:bg-green-700'}`}
                 >
                   {isSubmitting ? 'กำลังบันทึก...' : 'เพิ่มหนังสือ'}
                 </button>
